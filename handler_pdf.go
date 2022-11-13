@@ -119,14 +119,12 @@ func drawPattern(pdf gofpdf.Pdf, pattern pattern) error {
 
 	switch pattern.Name {
 	case "rect":
-		w, h := pdf.GetPageSize()
 		for x := 0.0; x < w; x += patternWidth {
 			for y := 0.0; y < h; y += patternHeight {
 				pdf.Rect(x, y, patternWidth, patternHeight, "D")
 			}
 		}
 	case "lines":
-		w, h := pdf.GetPageSize()
 		for y := 0.0; y < h; y += patternWidth {
 			pdf.Line(0, y, w, y)
 		}
