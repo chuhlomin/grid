@@ -138,12 +138,12 @@ func parsePDFRequest(request string) (*pdfRequest, error) {
 }
 
 func getPageSize(size, orientation string) (*gopdf.Rect, error) {
-	var w, h int
+	var w, h float64
 	switch size {
 	case "Letter":
-		w, h = 216, 279
+		w, h = 215.9, 279.4
 	case "Legal":
-		w, h = 216, 356
+		w, h = 215.9, 355.6
 	case "A1":
 		w, h = 594, 841
 	case "A2":
@@ -162,7 +162,7 @@ func getPageSize(size, orientation string) (*gopdf.Rect, error) {
 		w, h = h, w
 	}
 
-	return &gopdf.Rect{W: float64(w), H: float64(h)}, nil
+	return &gopdf.Rect{W: w, H: h}, nil
 }
 
 func drawPattern(pdf *gopdf.GoPdf, pageSize *gopdf.Rect, pattern pattern) error {
