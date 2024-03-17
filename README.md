@@ -10,13 +10,19 @@ https://grid.chuhlomin.com
 
 ## Local development
 
-It's a static site with Go-backend. To run it locally:
+It's a static site that deployed to CloudFlare Pages.
+
+To run it locally, make sure you have installed:
+
+- [Go](https://golang.org) 1.21+
+- [TinyGo](https://tinygo.org) 0.30.0
+- [Wrangler](https://developers.cloudflare.com/workers/cli-wrangler/install-update)
 
 ```bash
-make run
+make build dev
 ```
 
-Open in browser: http://localhost:8082
+Open in browser: http://localhost:8788
 
 ### Adding new pattern
 
@@ -26,12 +32,12 @@ In `index.html` update `#template_patterns`.
 
 Configure grid with parameters:
 
-* paper size: A4
-* orientation: portrait
-* width: 15mm
-* height: 9mm
-* line width: 250nm (500nm for dots)
-* color: #000000
+- paper size: A4
+- orientation: portrait
+- width: 15mm
+- height: 9mm
+- line width: 250nm (500nm for dots)
+- color: #000000
 
 Download PDF. Open PDF and export it to PNG.
 
