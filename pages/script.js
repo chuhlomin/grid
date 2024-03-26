@@ -289,7 +289,7 @@ function togglePreview(element) {
 function submitForm(element) {
   element.setAttribute("disabled", "disabled");
   const defaultLabel = element.innerHTML;
-  element.innerHTML = "Generating PDF...";
+  element.innerHTML = 'Generating<span class="may-hide"> PDF</span>...';
   // add sleep to show the "Generating PDF..." message
   setTimeout(() => {
     runWasmGeneratePDF(

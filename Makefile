@@ -14,9 +14,15 @@ vet:
 test:
 	@go test ./...
 
+.PHONY: hash
+## hash: update static files hashes in index.html
+hash:
+	sed -i '' -E "s/styles\.css\?crc=[0-9a-z]+/styles.css?crc=$$(crc32 ./pages/styles.css)/" pages/index.html
+	sed -i '' -E "s/script\.js\?crc=[0-9a-z]+/script.js?crc=$$(crc32 ./pages/script.js)/" pages/index.html
+
 .PHONY: dev
 ## dev: run the wrangler pages dev
-dev:
+dev: hash
 	wrangler pages dev pages/
 
 .PHONY: build the WASM binary

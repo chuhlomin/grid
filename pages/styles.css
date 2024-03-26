@@ -37,6 +37,10 @@
   margin: 0;
 }
 
+*:focus {
+  outline: 2px solid var(--color-link);
+}
+
 html {
   /* Prevent adjustments of font size after orientation changes */
   text-size-adjust: 100%;
@@ -211,6 +215,7 @@ input[type="number"] {
   font-size: var(--font-size);
   text-align: right;
   width: 8ch;
+  border: 1px solid #c6c8ca;
 }
 
 input[type="number"]:disabled {
@@ -232,8 +237,9 @@ input[type="number"]:disabled {
   display: none;
 }
 
-.pattern label {
+.pattern {
   display: block;
+  border-radius: 3px;
 }
 
 /* class that starts with pattern-*/
@@ -282,6 +288,19 @@ input[type="number"]:disabled {
       131,
       var(--underline-opacity)
     );
+  }
+  select {
+    background: #282a3a;
+    color: #eaf3f2;
+    border-color: #6e7072;
+  }
+  input[type="number"] {
+    background: #3a3d4b;
+    color: #d6dede;
+    border: 1px solid #6d717b;
+  }
+  #picker {
+    border: 1px solid #6d717b;
   }
   .actions button {
     color: var(--color-text);
@@ -423,8 +442,15 @@ input[type="number"]:disabled {
   }
 }
 
+@media screen and (max-width: 415px) {
+  /* does not fit "Generating PDF..." in one line */
+  button:disabled .may-hide {
+    display: none;
+  }
+}
+
 @media screen and (max-width: 370px) {
-  /* ? */
+  /* does not fit "Show Preview" and "Generate PDF" in one line */
   .may-hide {
     display: none;
   }
