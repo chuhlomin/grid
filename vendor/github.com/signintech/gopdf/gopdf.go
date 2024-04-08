@@ -6,6 +6,7 @@ import (
 	"compress/zlib" // for constants
 	"fmt"
 	"image"
+	"image/jpeg"
 	"image/png"
 	"io"
 	"log"
@@ -125,6 +126,12 @@ type ImageOptions struct {
 
 	extGStateIndexes []int
 }
+type ImageFromOption struct {
+	Format string //jpeg,png
+	X      float64
+	Y      float64
+	Rect   *Rect
+}
 
 type MaskOptions struct {
 	ImageOptions
@@ -189,7 +196,7 @@ func (gp *GoPdf) SetLineType(linetype string) {
 //	pdf.SetCustomLineType([]float64{0.8, 0.8}, 0)
 //	pdf.Line(50, 200, 550, 200)
 func (gp *GoPdf) SetCustomLineType(dashArray []float64, dashPhase float64) {
-	for i, _ := range dashArray {
+	for i := range dashArray {
 		gp.UnitsToPointsVar(&dashArray[i])
 	}
 	gp.UnitsToPointsVar(&dashPhase)
@@ -732,16 +739,32 @@ func (gp *GoPdf) Image(picPath string, x float64, y float64, rect *Rect) error {
 }
 
 func (gp *GoPdf) ImageFrom(img image.Image, x float64, y float64, rect *Rect) error {
+	return gp.ImageFromWithOption(img, ImageFromOption{
+		Format: "png",
+		X:      x,
+		Y:      y,
+		Rect:   rect,
+	})
+}
+
+func (gp *GoPdf) ImageFromWithOption(img image.Image, opts ImageFromOption) error {
 	if img == nil {
 		return errors.New("Invalid image")
 	}
 
-	gp.UnitsToPointsVar(&x, &y)
-	rect = rect.UnitsToPoints(gp.config.Unit)
+	gp.UnitsToPointsVar(&opts.X, &opts.Y)
+	opts.Rect = opts.Rect.UnitsToPoints(gp.config.Unit)
 	r, w := io.Pipe()
 	go func() {
 		bw := bufio.NewWriter(w)
-		err := png.Encode(bw, img)
+		var err error
+		switch opts.Format {
+		case "png":
+			err = png.Encode(bw, img)
+		case "jpeg":
+			err = jpeg.Encode(bw, img, nil)
+		}
+
 		bw.Flush()
 		if err != nil {
 			w.CloseWithError(err)
@@ -756,9 +779,9 @@ func (gp *GoPdf) ImageFrom(img image.Image, x float64, y float64, rect *Rect) er
 	}
 
 	imageOptions := ImageOptions{
-		X:    x,
-		Y:    y,
-		Rect: rect,
+		X:    opts.X,
+		Y:    opts.Y,
+		Rect: opts.Rect,
 	}
 
 	return gp.imageByHolder(imgh, imageOptions)
@@ -1712,7 +1735,7 @@ func (gp *GoPdf) MeasureTextWidth(text string) (float64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return PointsToUnits(gp.config.Unit, textWidthPdfUnit), nil
+	return pointsToUnits(gp.config, textWidthPdfUnit), nil
 }
 
 // MeasureCellHeightByText : measure Height of cell by text (use current font)
@@ -1727,7 +1750,7 @@ func (gp *GoPdf) MeasureCellHeightByText(text string) (float64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return PointsToUnits(gp.config.Unit, cellHeightPdfUnit), nil
+	return pointsToUnits(gp.config, cellHeightPdfUnit), nil
 }
 
 // Curve Draws a Bézier curve (the Bézier curve is tangent to the line between the control points at either end of the curve)
@@ -1946,8 +1969,8 @@ func (gp *GoPdf) init(importer ...*gofpdi.Importer) {
 	gp.compressLevel = zlib.DefaultCompression
 
 	// change the unit type
-	gp.config.PageSize = *gp.config.PageSize.UnitsToPoints(gp.config.Unit)
-	gp.config.TrimBox = *gp.config.TrimBox.UnitsToPoints(gp.config.Unit)
+	gp.config.PageSize = *gp.config.PageSize.unitsToPoints(gp.config)
+	gp.config.TrimBox = *gp.config.TrimBox.unitsToPoints(gp.config)
 
 	// init gofpdi free pdf document importer
 	gp.fpdi = importerOrDefault(importer...)
@@ -1968,22 +1991,22 @@ func (gp *GoPdf) resetCurrXY() {
 
 // UnitsToPoints converts the units to the documents unit type
 func (gp *GoPdf) UnitsToPoints(u float64) float64 {
-	return UnitsToPoints(gp.config.Unit, u)
+	return unitsToPoints(gp.config, u)
 }
 
 // UnitsToPointsVar converts the units to the documents unit type for all variables passed in
 func (gp *GoPdf) UnitsToPointsVar(u ...*float64) {
-	UnitsToPointsVar(gp.config.Unit, u...)
+	unitsToPointsVar(gp.config, u...)
 }
 
 // PointsToUnits converts the points to the documents unit type
 func (gp *GoPdf) PointsToUnits(u float64) float64 {
-	return PointsToUnits(gp.config.Unit, u)
+	return pointsToUnits(gp.config, u)
 }
 
 // PointsToUnitsVar converts the points to the documents unit type for all variables passed in
 func (gp *GoPdf) PointsToUnitsVar(u ...*float64) {
-	PointsToUnitsVar(gp.config.Unit, u...)
+	pointsToUnitsVar(gp.config, u...)
 }
 
 func (gp *GoPdf) isUseProtection() bool {
