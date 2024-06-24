@@ -63,7 +63,7 @@ pdf.Cell(nil, "您好")
 
 ```go
 pdf.SetTextColorCMYK(0, 6, 14, 0)
-pdf.Cell
+pdf.Cell(nil, "Hello")
 ```
 
 ### Image
@@ -113,7 +113,7 @@ import (
 
 func main()  {
 	pdf := gopdf.GoPdf{}
-	pdf.Start(gopdf.Config{ PageSize: *gopdf.PageSizeA4 }) //595.28, 841.89 = A4
+	pdf.Start(gopdf.Config{ PageSize: *gopdf.PageSizeA4 })
 	pdf.AddPage()
 	err := pdf.AddTTFFont("times", "./test/res/times.ttf")
 	if err != nil {
@@ -158,7 +158,7 @@ import (
 
 func main() {
     pdf := gopdf.GoPdf{}
-    pdf.Start(gopdf.Config{ PageSize: *gopdf.PageSizeA4 }) //595.28, 841.89 = A4
+    pdf.Start(gopdf.Config{ PageSize: *gopdf.PageSizeA4 })
 
     err := pdf.AddTTFFont("LiberationSerif-Regular", "./test/res/LiberationSerif-Regular.ttf")
     if err != nil {
@@ -282,7 +282,7 @@ func main() {
 
 	pdf := gopdf.GoPdf{}
 	pdf.Start(gopdf.Config{
-		PageSize: *gopdf.PageSizeA4, //595.28, 841.89 = A4
+		PageSize: *gopdf.PageSizeA4,
 		Protection: gopdf.PDFProtectionConfig{
 			UseProtection: true,
 			Permissions: gopdf.PermissionsPrint | gopdf.PermissionsCopy | gopdf.PermissionsModify,
@@ -328,7 +328,7 @@ func main() {
         }
 
         pdf := gopdf.GoPdf{}
-        pdf.Start(gopdf.Config{PageSize: gopdf.Rect{W: 595.28, H: 841.89}}) //595.28, 841.89 = A4
+        pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
 
         pdf.AddPage()
 
@@ -403,14 +403,14 @@ func main() {
 
     // Base trim-box
     pdf.Start(gopdf.Config{
-        PageSize: *gopdf.PageSizeA4, //595.28, 841.89 = A4
-        TrimBox: gopdf.Box{Left: mm6ToPx, Top: mm6ToPx, Right: 595 - mm6ToPx, Bottom: 842 - mm6ToPx},
+        PageSize: *gopdf.PageSizeA4,
+        TrimBox: gopdf.Box{Left: mm6ToPx, Top: mm6ToPx, Right: gopdf.PageSizeA4.W - mm6ToPx, Bottom: gopdf.PageSizeA4.H - mm6ToPx},
     })
 
     // Page trim-box
     opt := gopdf.PageOption{
-        PageSize: gopdf.PageSizeA4, //595.28, 841.89 = A4
-        TrimBox: &gopdf.Box{Left: mm6ToPx, Top: mm6ToPx, Right: 595 - mm6ToPx, Bottom: 842 - mm6ToPx},
+        PageSize: *gopdf.PageSizeA4,
+        TrimBox: &gopdf.Box{Left: mm6ToPx, Top: mm6ToPx, Right: gopdf.PageSizeA4.W - mm6ToPx, Bottom: gopdf.PageSizeA4.H - mm6ToPx},
     }
     pdf.AddPageWithOption(opt)
 
@@ -431,6 +431,7 @@ func main() {
 ```
 
 ### Placeholder.
+
 > this function(s) made for experimental. There may be changes in the future.
 
 With the placeholder function(s), you can create a placeholder to define a position. To make room for text to be add later.
@@ -443,12 +444,10 @@ There are 2 related function(s):
 Use case: For example, when you want to print the "total number of pages" on every page in pdf file, but you don't know the "total number of pages" until you have created all the pages.
 You can use **func PlaceHolderText** to create the point where you want "total number of pages" to be printed. And then when you have created all the pages so you know the "total number of pages", you call **FillInPlaceHoldText(...)**. This function will take the text (in this case, text is "total number of pages") replace at the point that been created since **func PlaceHolderText**.
 
-
-
 ```go
 func main(){
     	pdf := GoPdf{}
-	pdf.Start(Config{PageSize: Rect{W: 595.28, H: 841.89}}) 
+	pdf.Start(Config{PageSize: *PageSizeA4})
 	pdf.AddTTFFont("LiberationSerif-Regular", "LiberationSerif-Regular.ttf")
 	pdf.SetFont("LiberationSerif-Regular", "", 14) }
 
