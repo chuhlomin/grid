@@ -4,7 +4,7 @@ github.com/phpdave11/gofpdi
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
-# github.com/signintech/gopdf v0.26.0
+# github.com/signintech/gopdf v0.28.1
 ## explicit; go 1.13
 github.com/signintech/gopdf
 github.com/signintech/gopdf/fontmaker/core
